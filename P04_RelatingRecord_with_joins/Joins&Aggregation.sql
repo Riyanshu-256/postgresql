@@ -40,7 +40,8 @@ VALUES
 ('Priya_Sharma'),
 ('Rohan_Verma'),
 ('Sneha_Jain'),
-('Karan_Mehta');
+('Karan_Mehta'),
+('Karan_Mehta');;
 
 -- Insert photos (25 photos)
 INSERT INTO photos (url, user_id)
@@ -155,3 +156,44 @@ SELECT url, username
 FROM users
 JOIN photos
 ON users.id = photos.user_id;
+
+-- LEFT JOIN: Show all photos, even if no matching user exists
+SELECT url, username
+FROM photos
+LEFT JOIN users
+ON photos.user_id = users.id;
+
+-- Add a user without any photos
+INSERT INTO users (username)
+VALUES ('Nicole');
+
+-- RIGHT JOIN: Show all users, even if they have no photos
+SELECT url, username
+FROM photos
+RIGHT JOIN users
+ON photos.user_id = users.id;
+
+-- FULL JOIN: Show all users and all photos
+SELECT url, username
+FROM photos
+FULL JOIN users
+ON photos.user_id = users.id;
+
+-- Find users commenting on their own photos
+SELECT url, contents
+FROM photos
+JOIN comments
+ON photos.id = comments.photo_id
+WHERE photos.user_id = comments.user_id;
+
+-- Show username, photo URL, and comment for users commenting on their own photos
+SELECT
+    users.username,
+    photos.url,
+    comments.contents
+FROM comments
+JOIN photos
+ON photos.id = comments.photo_id
+JOIN users
+ON users.id = comments.user_id
+WHERE photos.user_id = comments.user_id;
