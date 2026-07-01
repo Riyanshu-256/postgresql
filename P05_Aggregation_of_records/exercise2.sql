@@ -1,5 +1,3 @@
-
-
 -- create a table of phones
 CREATE TABLE phones (
     name VARCHAR(50),
@@ -20,14 +18,9 @@ VALUES
     ('Droid', 'Motorola', 150, 8395),
     ('Wave S8500', 'Samsung', 175, 9259);
 
+
 -- Print for the manufacturer who have revenue greater than 2000000 for all the phones they sold
 SELECT manufacturer, SUM(price * units_sold) AS revenue
 FROM phones
 GROUP BY manufacturer
 HAVING SUM(price * units_sold) > 2000000;
-
-
-
-
-
-
