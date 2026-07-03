@@ -1,3 +1,15 @@
+-- Drop tables if they already exist
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS products;
+DROP TABLE IF EXISTS users;
+
+-- Create users table
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(56),
+    last_name VARCHAR(56)
+);
+
 -- Create products table
 CREATE TABLE products (
     id SERIAL PRIMARY KEY,
@@ -7,7 +19,23 @@ CREATE TABLE products (
     weight INT
 );
 
--- Insert 50 records
+-- Create orders table
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id),
+    product_id INT REFERENCES products(id),
+    paid BOOLEAN
+);
+
+-- Insert users
+INSERT INTO users (first_name, last_name) VALUES
+('Iva', 'Lindgren'),
+('Ignatius', 'Johns'),
+('Jannie', 'Boehm'),
+('Neal', 'Wehner'),
+('Mikayla', 'Casper');
+
+-- Insert products
 INSERT INTO products (name, department, price, weight)
 VALUES
 ('Shirt', 'Clothing', 876, 3),
@@ -61,27 +89,65 @@ VALUES
 ('Ladder', 'Industrial', 3400, 25),
 ('Generator', 'Industrial', 22000, 80);
 
--- Products with price greater than 876
+-- Insert orders
+INSERT INTO orders (user_id, product_id, paid) VALUES
+(5, 4, TRUE),
+(3, 2, TRUE),
+(4, 6, FALSE),
+(5, 3, TRUE),
+(1, 1, FALSE);
+
+-- Products whose price is greater than the most expensive toy
 SELECT name, price
 FROM products
 WHERE price > (
-    SELECT MAX(price) FROM products WHERE department = 'Toys'
+    SELECT MAX(price)
+    FROM products
+    WHERE department = 'Toys'
 );
 
--- Many rows, many column
-SELECT * FROM products;
+-- Many rows, many columns
+SELECT *
+FROM products;
 
 -- Many rows, one column
-SELECT id FROM Products;
+SELECT id
+FROM products;
 
 -- One row, one column
-SELECT COUNT(*) FROM products;
+SELECT COUNT(*)
+FROM products;
 
-SELECT name, price, (
-    SELECT MAX(price) FROM products
-) FROM products WHERE price > 867;
+-- Show each product with the maximum product price
+SELECT
+    name,
+    price,
+    (
+        SELECT MAX(price)
+        FROM products
+    ) AS max_price
+FROM products
+WHERE price > 867;
 
-SELECT name, price, (
-    SELECT price FROM products WHERE id = 3
-) AS id_3_price
-FROM products WHERE price > 867;
+-- Show each product with the price of product having id = 3
+SELECT
+    name,
+    price,
+    (
+        SELECT price
+        FROM products
+        WHERE id = 3
+    ) AS id_3_price
+FROM products
+WHERE price > 867;
+
+-- Price-to-weight ratio (decimal)
+SELECT
+    name,
+    price::numeric / weight AS price_weight_ratio
+FROM products;
+
+
+SELECT AVG(order_count) FROM (
+    SELECT user_id, COUNT(*) AS order_count FROM orders GROUP BY user_id
+) AS p
