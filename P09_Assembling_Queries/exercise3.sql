@@ -1,5 +1,4 @@
--- Drop table if it already exists
-DROP TABLE IF EXISTS phones;
+DROP TABLE phones;
 
 -- Create phones table
 CREATE TABLE phones ( 
@@ -21,10 +20,10 @@ VALUES
 ('Droid', 'Motorola', 150, 8395),
 ('Wave S8500', 'Samsung', 175, 9259);
 
--- Display all records
-SELECT * FROM phones;
+SELECT *
+FROM phones
+WHERE name = 'S5620 Monte';
 
-SELECT name, price, price / (
-    SELECT MAX(price) FROM phones
-) AS price_ratio
-FROM phones; 
+SELECT name, price
+FROM phones
+WHERE price > (SELECT price FROM phones WHERE name = 'S5620 Monte');

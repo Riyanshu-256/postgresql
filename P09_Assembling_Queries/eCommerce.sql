@@ -31,7 +31,7 @@ CREATE TABLE orders (
 INSERT INTO users (first_name, last_name) VALUES
 ('Iva', 'Lindgren'),
 ('Ignatius', 'Johns'),
-('Jannie', 'Boehm'),
+('Jannie', 'Boehm') ,
 ('Neal', 'Wehner'),
 ('Mikayla', 'Casper');
 
@@ -151,3 +151,18 @@ FROM products;
 SELECT AVG(order_count) FROM (
     SELECT user_id, COUNT(*) AS order_count FROM orders GROUP BY user_id
 ) AS p
+
+
+SELECT id 
+FROM orders 
+WHERE product_id IN (
+    SELECT id FROM products WHERE price/weight > 50
+);
+
+SELECT name
+FROM products
+WHERE Price > (
+    SELECT AVG(price) FROM products
+);
+
+-- 14
