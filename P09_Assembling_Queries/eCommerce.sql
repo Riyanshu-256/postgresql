@@ -1,4 +1,4 @@
--- Drop tables if they already exist
+-- Drop existing tables
 DROP TABLE IF EXISTS orders;
 DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS users;
@@ -31,7 +31,7 @@ CREATE TABLE orders (
 INSERT INTO users (first_name, last_name) VALUES
 ('Iva', 'Lindgren'),
 ('Ignatius', 'Johns'),
-('Jannie', 'Boehm') ,
+('Jannie', 'Boehm'),
 ('Neal', 'Wehner'),
 ('Mikayla', 'Casper');
 
@@ -97,7 +97,7 @@ INSERT INTO orders (user_id, product_id, paid) VALUES
 (5, 3, TRUE),
 (1, 1, FALSE);
 
--- Products whose price is greater than the most expensive toy
+-- 1. Products costlier than the most expensive toy
 SELECT name, price
 FROM products
 WHERE price > (
@@ -106,19 +106,19 @@ WHERE price > (
     WHERE department = 'Toys'
 );
 
--- Many rows, many columns
+-- 2. Show all products
 SELECT *
 FROM products;
 
--- Many rows, one column
+-- 3. Show product IDs
 SELECT id
 FROM products;
 
--- One row, one column
+-- 4. Count total products
 SELECT COUNT(*)
 FROM products;
 
--- Show each product with the maximum product price
+-- 5. Show each product with the highest price
 SELECT
     name,
     price,
@@ -129,7 +129,7 @@ SELECT
 FROM products
 WHERE price > 867;
 
--- Show each product with the price of product having id = 3
+-- 6. Show each product with price of product ID 3
 SELECT
     name,
     price,
@@ -141,32 +141,38 @@ SELECT
 FROM products
 WHERE price > 867;
 
--- Price-to-weight ratio (decimal)
+-- 7. Calculate price per unit weight
 SELECT
     name,
     price::numeric / weight AS price_weight_ratio
 FROM products;
 
+-- 8. Average orders per user
+SELECT AVG(order_count)
+FROM (
+    SELECT user_id, COUNT(*) AS order_count
+    FROM orders
+    GROUP BY user_id
+) AS p;
 
-SELECT AVG(order_count) FROM (
-    SELECT user_id, COUNT(*) AS order_count FROM orders GROUP BY user_id
-) AS p
-
-
-SELECT id 
-FROM orders 
+-- 9. Orders with product price/weight > 50
+SELECT id
+FROM orders
 WHERE product_id IN (
-    SELECT id FROM products WHERE price/weight > 50
+    SELECT id
+    FROM products
+    WHERE price / weight > 50
 );
 
--- 
+-- 10. Products costlier than average price
 SELECT name
 FROM products
-WHERE Price > (
-    SELECT AVG(price) FROM products
+WHERE price > (
+    SELECT AVG(price)
+    FROM products
 );
 
--- NOT IN
+-- 11. Products not in departments with items below 100
 SELECT name, department
 FROM products
 WHERE department NOT IN (
@@ -175,12 +181,49 @@ WHERE department NOT IN (
     WHERE price < 100
 );
 
--- Show the name, department, and price of products that are more expensive than all products in the 'Industrial' department
-SELECT name, department, price FROM products WHERE price > ALL(
-    SELECT price FROM products WHERE department = 'Industrial'
+-- 12. Products costlier than all Industrial products
+SELECT name, department, price
+FROM products
+WHERE price > ALL (
+    SELECT price
+    FROM products
+    WHERE department = 'Industrial'
 );
 
--- Show the name of the products that are more expensive than atleast one product in the 'Industrial' department
-SELECT name, department, price FROM products WHERE price > SOME(
-    SELECT price FROM products WHERE department = 'Industrial'
+-- 13. Products costlier than at least one Industrial product
+SELECT name, department, price
+FROM products
+WHERE price > SOME (
+    SELECT price
+    FROM products
+    WHERE department = 'Industrial'
+);
+
+-- Show the most expensive product from each department
+SELECT name, department, price
+FROM products AS p1
+WHERE p1.price = (
+    SELECT MAX(price)
+    FROM products AS p2
+    WHERE p1.department = p2.department
+);
+
+-- Show each product with its total number of orders
+SELECT p1.name, (
+    SELECT COUNT(*)
+    FROM orders AS o1
+    WHERE o1.product_id = p1.id
+) AS num_orders
+FROM products AS p1
+
+-- Return a single value
+SELECT (
+    SELECT MAX(price) FROM products
+);
+
+
+SELECT (
+    SELECT MAX(price) FROM products
+), (
+    SELECT AVG(price) FROM products
 );
