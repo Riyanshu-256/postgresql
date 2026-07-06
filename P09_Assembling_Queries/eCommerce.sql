@@ -221,7 +221,7 @@ SELECT (
     SELECT MAX(price) FROM products
 );
 
-
+-- Print max, avg
 SELECT (
     SELECT MAX(price) FROM products
 ), (
