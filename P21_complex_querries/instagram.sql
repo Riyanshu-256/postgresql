@@ -196,10 +196,8 @@ INSERT INTO likes (user_id, post_id) VALUES
 (41,42),(42,43),(43,44),(44,45),(45,46),
 (46,47),(47,48),(48,49),(49,50),(50,1);
 
--- ==========================================
--- SAMPLE QUERIES
--- ==========================================
 
+-- SAMPLE QUERIES
 -- Last 3 users
 SELECT * FROM users
 ORDER BY id DESC
@@ -221,5 +219,4 @@ WHERE posts.user_id = 20;
 SELECT users.username, COUNT(*) AS total_likes
 FROM users
 JOIN likes ON likes.user_id = users.id
-GROUP BY users.id, users.username
-ORDER BY total_likes DESC;
+GROUP BY users.id, users.username;
