@@ -63,11 +63,23 @@ INSERT INTO likes (user_id, post_id) VALUES
 (10,9);
 
 
+-- Without CTE (Using Subquery)
 SELECT username, tags.created_at
 FROM users
 JOIN (
     SELECT user_id, created_at FROM caption_tags
-	UNION ALL
-	SELECT user_id, created_at FROM photo_tags
+    UNION ALL
+    SELECT user_id, created_at FROM photo_tags
 ) AS tags ON tags.user_id = users.id
+WHERE tags.created_at < '2010-01-07';
+
+-- With CTE (Cleaner & More Readable)
+WITH tags AS (
+    SELECT user_id, created_at FROM caption_tags
+    UNION ALL
+    SELECT user_id, created_at FROM photo_tags
+)
+SELECT DISTINCT users.username, tags.created_at
+FROM users
+JOIN tags ON tags.user_id = users.id
 WHERE tags.created_at < '2010-01-07';
